@@ -1,9 +1,10 @@
 /**
  * A class to represent a shot from the player.
+ * @param speed 
+ * @param x 
+ * @param y 
  */
-function Bullet (speed, x, y, graphics) {
-  this.graphics = graphics;
-  
+function Bullet (speed, x, y) {
   this.speed = speed;
 
   this.active = true;
@@ -26,13 +27,15 @@ function Bullet (speed, x, y, graphics) {
 }
 
 /**
- * 
+ * Draw this object.
+ * @param canvas The canvas object where this object is going to be drawn.
+ * @param graphics A graphics object used to draw this object.
  */
-Bullet.prototype.draw = function() {
-  this.graphics.beginFill(this.color);
-  this.graphics.lineStyle(1, this.color);
+Bullet.prototype.draw = function(canvas, graphics) {
+  graphics.beginFill(this.color);
+  graphics.lineStyle(1, this.color);
   //draw a rectangle
-  this.graphics.drawRect(this.x, this.y, this.width, this.height);
+  graphics.drawRect(this.x, this.y, this.width, this.height);
 };
 
 /**

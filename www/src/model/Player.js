@@ -3,10 +3,9 @@
  * @param {Sprite} A pixi.js Sprite representing player Spaceship.
  * @param {Container} A pixi Container where this Sprite will be placed.
  */
-function Player (sprite, container, graphics) {
+function Player (sprite, container) {
   var tileSprite = sprite;
   this.gameContainer = container;
-  this.graphics = graphics;
   
   this.color = "#FFF";
   this.x = 220;
@@ -19,16 +18,20 @@ function Player (sprite, container, graphics) {
 
 /**
  * Draw the stage.
+ * @param canvas The canvas object where this object is going to be drawn.
+ * @param graphics A graphics object used to draw this object.
  */
-Player.prototype.draw = function() {
-  this.graphics.beginFill(this.color);
-  this.graphics.lineStyle(1, this.color);
+Player.prototype.draw = function(canvas, graphics) {
+  var canvas = canvas;
+  var graphics = graphics;
+  graphics.beginFill(this.color);
+  graphics.lineStyle(1, this.color);
   //draw a rectangle
-  this.graphics.drawRect(this.x, this.y, this.width, this.height);
+  graphics.drawRect(this.x, this.y, this.width, this.height);
   
   // draw the bullets
   this.playerBullets.forEach(function(bullet) {
-    bullet.draw();
+    bullet.draw(canvas, graphics);
   });
 }
 
@@ -48,7 +51,7 @@ Player.prototype.update = function () {
 Player.prototype.shoot = function() {
   var bulletPosition = this.midpoint();
 
-  var bullet = new Bullet(5, bulletPosition.x, bulletPosition.y, this.graphics);
+  var bullet = new Bullet(5, bulletPosition.x, bulletPosition.y);
   this.playerBullets.push(bullet);
 };
 

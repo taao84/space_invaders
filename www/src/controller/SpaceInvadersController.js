@@ -8,11 +8,12 @@ function SpaceInvadersController (canvasWidth, canvasHeight) {
   //create an empty container
   this.gameContainer = new PIXI.Container();
   this.graphics = new PIXI.Graphics();
-  var canvasWidth = canvasWidth;
-  var canvasHeight = canvasHeight;
+  this.canvasWidth = canvasWidth;
+  this.canvasHeight = canvasHeight;
   
   // Create the game elements
-  var player = new Player(null, this.gameContainer, this.graphics);
+  var player = new Player(null, this.gameContainer);
+  this.enemies = [];
   
   this.gameContainer.addChild(this.graphics);
   
@@ -53,8 +54,14 @@ function SpaceInvadersController (canvasWidth, canvasHeight) {
  */
 SpaceInvadersController.prototype.draw = function() {
   // this.gameContainer.clearRect(0, 0, canvasWidth, canvasHeight);
-  this.graphics.clear();
-  this.getPlayer().draw();
+  var graphics = this.graphics;
+  var canvas = this.gameContainer;
+  graphics.clear();
+  this.getPlayer().draw(canvas, graphics);
+  
+  this.enemies.forEach(function(enemy) {
+    enemy.draw(canvas, graphics);
+  });
 }
 
 /**
@@ -63,6 +70,21 @@ SpaceInvadersController.prototype.draw = function() {
 SpaceInvadersController.prototype.update = function() {
   this.getPlayer().update();
   // this.player.x = this.player.x.clamp(0, CANVAS_WIDTH - player.width);
+  
+  this.enemies.forEach(function(enemy) {
+    enemy.update();
+  });
+
+  this.enemies = this.enemies.filter(function(enemy) {
+    return enemy.active;
+  });
+  
+  if ((this.enemies) && (this.enemies.length < 20)) { 
+    if(Math.random() < 0.1) {
+      var enemy = new Enemy(this.canvasWidth, this.canvasHeight);
+      this.enemies.push(enemy);
+    }
+  }
 }
 
 /**

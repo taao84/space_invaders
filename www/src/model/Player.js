@@ -4,8 +4,9 @@
  * @param {Container} A pixi Container where this Sprite will be placed.
  */
 function Player (sprite, container) {
-  var tileSprite = sprite;
+  this.tileSprite = sprite;
   this.gameContainer = container;
+  this.gameContainer.addChild(this.tileSprite);
   
   this.color = "#FFF";
   this.x = 220;
@@ -14,7 +15,25 @@ function Player (sprite, container) {
   this.height = 30;
   
   this.playerBullets = [];
+  
+  // Initialize player
+  this.tileSprite.interactive = false;
+  // is the tile selected?
+  this.tileSprite.isSelected = false;
+  // place the tile
+  this.tileSprite.position.x = this.x;
+  this.tileSprite.position.y = this.y;
 };
+
+Player.prototype.moveRight = function(steps) {
+  this.x += steps;
+  this.tileSprite.position.x = this.x;
+}
+
+Player.prototype.moveLeft = function(steps) {
+  this.x -= steps;
+  this.tileSprite.position.x = this.x;
+}
 
 /**
  * Draw the stage.
@@ -24,10 +43,14 @@ function Player (sprite, container) {
 Player.prototype.draw = function(canvas, graphics) {
   var canvas = canvas;
   var graphics = graphics;
-  graphics.beginFill(this.color);
-  graphics.lineStyle(1, this.color);
-  //draw a rectangle
-  graphics.drawRect(this.x, this.y, this.width, this.height);
+  
+  // Draw a rectangle if there is no sprite loaded
+  if (!this.tileSprite) {
+    graphics.beginFill(this.color);
+    graphics.lineStyle(1, this.color);
+    //draw a rectangle
+    graphics.drawRect(this.x, this.y, this.width, this.height);
+  }
   
   // draw the bullets
   this.playerBullets.forEach(function(bullet) {

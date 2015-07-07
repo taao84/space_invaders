@@ -12,7 +12,8 @@ function SpaceInvadersController (canvasWidth, canvasHeight) {
   this.canvasHeight = canvasHeight;
   
   // Create the game elements
-  var player = new Player(null, this.gameContainer);
+  var tilePlayer = PIXI.Sprite.fromFrame("galaga_1_7.png");
+  var player = new Player(tilePlayer, this.gameContainer);
   this.enemies = [];
   
   this.gameContainer.addChild(this.graphics);
@@ -26,7 +27,7 @@ function SpaceInvadersController (canvasWidth, canvasHeight) {
   
   //Left arrow key `press` method
   left.press = function() {
-    player.x -= 5;
+    player.moveLeft(5);
   };
 
   //Left arrow key `release` method
@@ -34,7 +35,7 @@ function SpaceInvadersController (canvasWidth, canvasHeight) {
   
   //Right
   right.press = function() {
-    player.x += 5;
+    player.moveRight(5);
   };
   right.release = function() {
   };
@@ -81,7 +82,8 @@ SpaceInvadersController.prototype.update = function() {
   
   if ((this.enemies) && (this.enemies.length < 20)) { 
     if(Math.random() < 0.1) {
-      var enemy = new Enemy(this.canvasWidth, this.canvasHeight);
+      var tileEnemy = PIXI.Sprite.fromFrame("galaga_3_7.png");
+      var enemy = new Enemy(tileEnemy, this.gameContainer, this.canvasWidth, this.canvasHeight);
       this.enemies.push(enemy);
     }
   }

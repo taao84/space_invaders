@@ -12,8 +12,7 @@ function SpaceInvadersController (canvasWidth, canvasHeight) {
   this.canvasHeight = canvasHeight;
   
   // Create the game elements
-  var tilePlayer = PIXI.Sprite.fromFrame("galaga_1_7.png");
-  var player = new Player(tilePlayer, this.gameContainer);
+  var player = new Player(this.gameContainer);
   this.enemies = [];
   
   this.gameContainer.addChild(this.graphics);
@@ -54,7 +53,6 @@ function SpaceInvadersController (canvasWidth, canvasHeight) {
  * Draw the stage.
  */
 SpaceInvadersController.prototype.draw = function() {
-  // this.gameContainer.clearRect(0, 0, canvasWidth, canvasHeight);
   var graphics = this.graphics;
   var canvas = this.gameContainer;
   graphics.clear();
@@ -69,24 +67,48 @@ SpaceInvadersController.prototype.draw = function() {
  * Update the stage. 
  */
 SpaceInvadersController.prototype.update = function() {
-  this.getPlayer().update();
-  // this.player.x = this.player.x.clamp(0, CANVAS_WIDTH - player.width);
-  
-  this.enemies.forEach(function(enemy) {
-    enemy.update();
+  if (this.getPlayer().active) { 
+    this.getPlayer().update();
+    
+    this.enemies = this.enemies.filter(function(enemy) {
+      return enemy.active;
+    });
+
+    this.enemies.forEach(function(enemy) {
+      enemy.update();
+    });
+    
+    if ((this.enemies) && (this.enemies.length < 10)) { 
+      if(Math.random() < 0.1) {
+        var enemy = new Enemy(this.gameContainer, this.canvasWidth, this.canvasHeight);
+        this.enemies.push(enemy);
+      }
+    }
+    this.handleCollisions();
+  }
+}
+
+/**
+ * Handle the collision of elements.
+ */
+SpaceInvadersController.prototype.handleCollisions = function() {
+  var player = this.getPlayer();
+  var enemies = this.enemies;
+  player.playerBullets.forEach(function(bullet) {
+    enemies.forEach(function(enemy) {
+      if (SpaceInvadersController.rectangularCollision(bullet, enemy)) {
+        enemy.explode();
+        bullet.active = false;
+      }
+    });
   });
 
-  this.enemies = this.enemies.filter(function(enemy) {
-    return enemy.active;
-  });
-  
-  if ((this.enemies) && (this.enemies.length < 20)) { 
-    if(Math.random() < 0.1) {
-      var tileEnemy = PIXI.Sprite.fromFrame("galaga_3_7.png");
-      var enemy = new Enemy(tileEnemy, this.gameContainer, this.canvasWidth, this.canvasHeight);
-      this.enemies.push(enemy);
+  enemies.forEach(function(enemy) {
+    if (SpaceInvadersController.rectangularCollision(enemy, player)) {
+      enemy.explode();
+      player.explode();
     }
-  }
+  });
 }
 
 /**
@@ -100,4 +122,19 @@ SpaceInvadersController.prototype.update = function() {
 SpaceInvadersController.isElementsInBounds = function(element) {
   return element.getX() >= 0 && element.getX() <= canvasWidth
       && element.getY() >= 0 && element.getY() <= canvasHeight;
+}
+
+/**
+ * This method returns true if the two given elements collide. False otherwise.
+ * The given objects have to implement the getX(), getY(), getWidth() and getHeight() methods, 
+ * otherwise this method will fail.
+ * @param o1 The first element to check in the collision.
+ * @param o2 The second element to check in the collision.
+ * @return {boolean} true if the objects intersect, false otherwise. 
+ */
+SpaceInvadersController.rectangularCollision = function(o1, o2) {
+  return o1.getX() < o2.getX() + o2.getWidth()
+      && o1.getX() + o1.getWidth() > o2.getX()
+      && o1.getY() < o2.getY() + o2.getHeight()
+      && o1.getY() + o1.getHeight() > o2.getY();
 }

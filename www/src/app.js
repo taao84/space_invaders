@@ -21,7 +21,7 @@ function initializeMainContainers() {
 }
 
 function initializeStage() {
-  renderer = PIXI.autoDetectRenderer(canvasWidth, canvasHeight, {backgroundColor : 0x1099bb});
+  renderer = PIXI.autoDetectRenderer(canvasWidth, canvasHeight, {backgroundColor : 0x000000});
   document.body.appendChild(renderer.view);
   //importing a texture atlas created with texture packer
   var tileAtlas = ["asset/space_invaders_atlas.json"];

@@ -12,7 +12,7 @@ function Bullet (speed, x, y) {
   this.yVelocity = -speed;
   this.width = 3;
   this.height = 3;
-  this.color = "#000";
+  this.color = "0xFFFFFF";
   
   this.x = x;
   this.y = y
@@ -23,6 +23,14 @@ function Bullet (speed, x, y) {
   
   this.getY = function() {
     return this.y;
+  }
+  
+  this.getWidth = function() {
+    return this.width;
+  }
+  
+  this.getHeight = function() {
+    return this.height;
   }
 }
 

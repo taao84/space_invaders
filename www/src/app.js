@@ -35,8 +35,10 @@ function onTilesLoaded() {
 }
 
 function animate() {
-  spaceInvadersController.update();
-  spaceInvadersController.draw();
-  requestAnimationFrame(animate);
-  renderer.render(stage);
+  if (!spaceInvadersController.gameOver) {
+    spaceInvadersController.update();
+    spaceInvadersController.draw();
+    requestAnimationFrame(animate);
+    renderer.render(stage);
+  }
 } 

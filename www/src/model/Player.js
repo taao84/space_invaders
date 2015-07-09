@@ -5,7 +5,7 @@
  */
 function Player (container) {
   this.NORMAL_PLAYER_SPRITE = "galaga_1_7.png";
-  this.EXPLODED_PLAYER_SPRITE = "galaga_explosion_1_2.png";
+  this.EXPLODED_PLAYER_SPRITE = "galaga_explosion_1_4.png";
   
   this.tileSprite = PIXI.Sprite.fromFrame(this.NORMAL_PLAYER_SPRITE);
   this.gameContainer = container;
@@ -119,6 +119,5 @@ Player.prototype.midpoint = function() {
  * Explode this enemy.
  */
 Player.prototype.explode = function() {
-  console.log("Boom player exploded!!");
   this.active = false;
 }

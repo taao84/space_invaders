@@ -14,6 +14,7 @@ function SpaceInvadersController (canvasWidth, canvasHeight) {
   // Create the game elements
   var player = new Player(this.gameContainer);
   this.enemies = [];
+  this.gameOver = false;
   
   this.gameContainer.addChild(this.graphics);
   
@@ -53,6 +54,10 @@ function SpaceInvadersController (canvasWidth, canvasHeight) {
  * Draw the stage.
  */
 SpaceInvadersController.prototype.draw = function() {
+  if (this.gameOver) {
+    return;
+  }
+  
   var graphics = this.graphics;
   var canvas = this.gameContainer;
   graphics.clear();
@@ -67,6 +72,10 @@ SpaceInvadersController.prototype.draw = function() {
  * Update the stage. 
  */
 SpaceInvadersController.prototype.update = function() {
+  if (this.gameOver) {
+    return
+  }
+  
   if (this.getPlayer().active) { 
     this.getPlayer().update();
     
@@ -85,6 +94,9 @@ SpaceInvadersController.prototype.update = function() {
       }
     }
     this.handleCollisions();
+  }
+  else {
+    this.gameOver = true;
   }
 }
 

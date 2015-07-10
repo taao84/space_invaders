@@ -11,12 +11,14 @@ function SpaceInvadersController (canvasWidth, canvasHeight) {
   this.canvasWidth = canvasWidth;
   this.canvasHeight = canvasHeight;
   
+  var background = new Background(this.gameContainer, this.canvasWidth, this.canvasHeight);
+  
+  this.gameContainer.addChild(this.graphics);
+  
   // Create the game elements
   var player = new Player(this.gameContainer);
   this.enemies = [];
   this.gameOver = false;
-  
-  this.gameContainer.addChild(this.graphics);
   
   //Capture the keyboard arrow keys and space bar
   var left = keyboard(37),
@@ -47,16 +49,18 @@ function SpaceInvadersController (canvasWidth, canvasHeight) {
   
   this.getPlayer = function () {
     return player;
-  } 
+  };
+  
+  this.getBackground = function () {
+    return background;
+  };
 } 
 
 /**
  * Draw the stage.
  */
 SpaceInvadersController.prototype.draw = function() {
-  if (this.gameOver) {
-    return;
-  }
+  this.getBackground().draw();
   
   var graphics = this.graphics;
   var canvas = this.gameContainer;
@@ -72,31 +76,31 @@ SpaceInvadersController.prototype.draw = function() {
  * Update the stage. 
  */
 SpaceInvadersController.prototype.update = function() {
-  if (this.gameOver) {
-    return
+  this.getBackground().update();
+  
+  this.getPlayer().update();
+  
+  this.enemies = this.enemies.filter(function(enemy) {
+    return enemy.active;
+  });
+
+  this.enemies.forEach(function(enemy) {
+    enemy.update();
+  });
+  
+  if ((this.enemies) && (this.enemies.length < 10)) { 
+    if(Math.random() < 0.1) {
+      var enemy = new Enemy(this.gameContainer, this.canvasWidth, this.canvasHeight);
+      this.enemies.push(enemy);
+    }
   }
   
-  if (this.getPlayer().active) { 
-    this.getPlayer().update();
-    
-    this.enemies = this.enemies.filter(function(enemy) {
-      return enemy.active;
-    });
-
-    this.enemies.forEach(function(enemy) {
-      enemy.update();
-    });
-    
-    if ((this.enemies) && (this.enemies.length < 10)) { 
-      if(Math.random() < 0.1) {
-        var enemy = new Enemy(this.gameContainer, this.canvasWidth, this.canvasHeight);
-        this.enemies.push(enemy);
-      }
-    }
-    this.handleCollisions();
-  }
-  else {
+  if (!this.getPlayer().active) { 
     this.gameOver = true;
+  }
+  
+  if (!this.gameOver) {
+    this.handleCollisions();
   }
 }
 

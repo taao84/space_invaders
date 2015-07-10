@@ -1,22 +1,36 @@
+Player.NORMAL_SPRITE = "galaga_1_7.png";
+Player.EXPLODED_ANIMATION = [
+  "galaga_explosion_1_2.png", "galaga_explosion_1_3.png", 
+  "galaga_explosion_1_4.png", "galaga_explosion_1_6.png",
+];
+
 /**
  * A class to represent the player spaceship.
  * @param {Sprite} A pixi.js Sprite representing player Spaceship.
  * @param {Container} A pixi Container where this Sprite will be placed.
  */
 function Player (container) {
-  this.NORMAL_PLAYER_SPRITE = "galaga_1_7.png";
-  this.EXPLODED_PLAYER_SPRITE = "galaga_explosion_1_4.png";
-  
-  this.tileSprite = PIXI.Sprite.fromFrame(this.NORMAL_PLAYER_SPRITE);
+  this.tileSprite = PIXI.Sprite.fromFrame(Player.NORMAL_SPRITE);
   this.gameContainer = container;
   this.gameContainer.addChild(this.tileSprite);
   
+  //Explosion animation
+  this.explosionClip = null;
+  var explosionTextures = [];
+  for (var i = 0; i < Player.EXPLODED_ANIMATION.length; i++) {
+    var texture = PIXI.Texture.fromFrame(Player.EXPLODED_ANIMATION[i]);
+    explosionTextures.push(texture);
+  }
+  this.explosionClip = new PIXI.extras.MovieClip(explosionTextures);
+  this.animationExplotionCounter = 0;
+  
   this.active = true;
+  this.exploded = false;
   this.color = "#FFF";
   this.x = 220;
   this.y = 270;
-  this.width = 30;
-  this.height = 30;
+  this.width = 17;
+  this.height = 18;
   
   this.playerBullets = [];
   
@@ -63,6 +77,19 @@ Player.prototype.moveLeft = function(steps) {
 Player.prototype.draw = function(canvas, graphics) {
   var canvas = canvas;
   var graphics = graphics;
+  if ((this.exploded) && (this.animationExplotionCounter == 0)) {
+    canvas.removeChild(this.tileSprite);
+    this.explosionClip.position.x = this.x;
+    this.explosionClip.position.y = this.y;
+    this.explosionClip.anchor.x = 0;
+    this.explosionClip.anchor.y = 0;
+    this.explosionClip.animationSpeed = 0.1;
+    this.explosionClip.loop = false;
+    this.explosionClip.gotoAndPlay(0);
+    canvas.addChild(this.explosionClip);
+    return;
+  }
+  
   if (this.active) {
     // Draw a rectangle if there is no sprite loaded
     if (!this.tileSprite) {
@@ -78,13 +105,7 @@ Player.prototype.draw = function(canvas, graphics) {
     });
   }
   else {
-    this.gameContainer.removeChild(this.tileSprite);
-    this.tileSprite = PIXI.Sprite.fromFrame(this.EXPLODED_PLAYER_SPRITE);
-    // place the tile
-    this.tileSprite.position.x = this.x;
-    this.tileSprite.position.y = this.y;
-    
-    this.gameContainer.addChild(this.tileSprite);
+    canvas.removeChild(this.explosionClip);
   }
 }
 
@@ -99,6 +120,16 @@ Player.prototype.update = function () {
   this.playerBullets = this.playerBullets.filter(function(bullet) {
     return bullet.active;
   });
+  
+  if (this.exploded) { 
+    var iter = Player.EXPLODED_ANIMATION.length * 10;
+    if (this.animationExplotionCounter < iter) {
+      this.animationExplotionCounter++;
+    }
+    else {
+      this.active = false;
+    }
+  }
 }
 
 Player.prototype.shoot = function() {
@@ -119,5 +150,5 @@ Player.prototype.midpoint = function() {
  * Explode this enemy.
  */
 Player.prototype.explode = function() {
-  this.active = false;
+  this.exploded = true;
 }

@@ -24,7 +24,7 @@ function initializeStage() {
   renderer = PIXI.autoDetectRenderer(canvasWidth, canvasHeight, {backgroundColor : 0x000000});
   document.body.appendChild(renderer.view);
   //importing a texture atlas created with texture packer
-  var tileAtlas = ["asset/space_invaders_atlas.json"];
+  var tileAtlas = ["assets/space_invaders_atlas.json"];
   // create a new loader
   var loader = PIXI.loader.add(tileAtlas).load(onTilesLoaded);
 }
@@ -35,10 +35,10 @@ function onTilesLoaded() {
 }
 
 function animate() {
-  if (!spaceInvadersController.gameOver) {
+  //if (!spaceInvadersController.gameOver) {
     spaceInvadersController.update();
     spaceInvadersController.draw();
     requestAnimationFrame(animate);
     renderer.render(stage);
-  }
+  //}
 } 

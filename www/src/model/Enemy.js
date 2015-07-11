@@ -51,7 +51,7 @@ function Enemy(container, canvasWidth, canvasHeight) {
 
   this.color = "#A2B";
 
-  this.x = canvasWidth / 4 + Math.random() * canvasHeight / 2;
+  this.x = Math.floor(Math.random() * canvasWidth);
   this.y = 0;
   this.xVelocity = 0
   this.yVelocity = 0.5;
@@ -134,7 +134,11 @@ Enemy.prototype.update = function() {
   else {
     this.x += this.xVelocity;
     this.y += this.yVelocity;
-  
+    
+    if (this.x <= 0) {
+      this.x -= this.xVelocity;
+    }
+    
     this.enemyMovementClip.position.x = this.x;
     this.enemyMovementClip.position.y = this.y;
     

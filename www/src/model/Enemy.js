@@ -1,5 +1,10 @@
 
-Enemy.NORMAL_ENEMY_SPRITE = "galaga_3_7.png";
+Enemy.NORMAL_ENEMY_SPRITE = [
+  "galaga_3_1.png", "galaga_3_2.png",
+  "galaga_3_3.png", "galaga_3_4.png", 
+  "galaga_3_5.png", "galaga_3_6.png", 
+  "galaga_3_7.png", "galaga_3_8.png" 
+];
 Enemy.EXPLODED_ENEMY_SPRITE = [
   "galaga_enemy_explosion_1_1.png", "galaga_enemy_explosion_1_2.png", 
   "galaga_enemy_explosion_1_3.png", "galaga_enemy_explosion_1_4.png", 
@@ -12,19 +17,32 @@ Enemy.EXPLODED_ENEMY_SPRITE = [
  */
 function Enemy(container, canvasWidth, canvasHeight) {
   this.gameContainer = container;
-  this.tileSprite = PIXI.Sprite.fromFrame(Enemy.NORMAL_ENEMY_SPRITE);
-  this.explosionClip = null;
-  this.animationCounter = 0;
   
-  this.gameContainer.addChild(this.tileSprite);
+  // enemy animation
+  var enemyTextures = [];
+  for (var i=0; i<Enemy.NORMAL_ENEMY_SPRITE.length; i++) {
+    var texture = PIXI.Texture.fromFrame(Enemy.NORMAL_ENEMY_SPRITE[i]);
+    enemyTextures.push(texture);
+  }
+  this.enemyMovementClip = new PIXI.extras.MovieClip(enemyTextures);
+  this.enemyMovementClip.anchor.x = 0;
+  this.enemyMovementClip.anchor.y = 0;
+  this.enemyMovementClip.animationSpeed = 0.01;
+  this.enemyMovementClip.loop = true;
+  this.enemyMovementClip.gotoAndPlay(Math.floor(Math.random() * 8));
+  this.gameContainer.addChild(this.enemyMovementClip);
   
   // Explosion animation
+  this.animationExplosionCounter = 0;
   var explosionTextures = [];
   for (var i=0; i<Enemy.EXPLODED_ENEMY_SPRITE.length; i++) {
     var texture = PIXI.Texture.fromFrame(Enemy.EXPLODED_ENEMY_SPRITE[i]);
     explosionTextures.push(texture);
   }
   this.explosionClip = new PIXI.extras.MovieClip(explosionTextures);
+  
+  //Sounds
+  this.explodingSound = null;
   
   this.active = true;
   this.timeDestruction = null;
@@ -38,16 +56,16 @@ function Enemy(container, canvasWidth, canvasHeight) {
   this.xVelocity = 0
   this.yVelocity = 0.5;
 
-  this.width = 32;
-  this.height = 32;
+  this.width = 19;
+  this.height = 20;
   
   //Initialize player
-  this.tileSprite.interactive = false;
+  this.enemyMovementClip.interactive = false;
   // is the tile selected?
-  this.tileSprite.isSelected = false;
+  this.enemyMovementClip.isSelected = false;
   // place the tile
-  this.tileSprite.position.x = this.x;
-  this.tileSprite.position.y = this.y;
+  this.enemyMovementClip.position.x = this.x;
+  this.enemyMovementClip.position.y = this.y;
   
   this.getX = function() {
     return this.x;
@@ -73,8 +91,8 @@ function Enemy(container, canvasWidth, canvasHeight) {
  */
 Enemy.prototype.draw = function(canvas, graphics) {
   if (this.exploded) {
-    if ((this.active) && (this.animationCounter == 0)) {
-      canvas.removeChild(this.tileSprite);
+    if ((this.active) && (this.animationExplosionCounter == 0)) {
+      canvas.removeChild(this.enemyMovementClip);
       this.explosionClip.position.x = this.x;
       this.explosionClip.position.y = this.y;
       this.explosionClip.anchor.x = 0;
@@ -91,7 +109,7 @@ Enemy.prototype.draw = function(canvas, graphics) {
   }
   else {
     // If there is no sprite loaded then draw a rectangle
-    if (!this.tileSprite) {
+    if (!this.enemyMovementClip) {
       graphics.beginFill(this.color);
       graphics.lineStyle(1, this.color);
       //draw a rectangle
@@ -106,8 +124,8 @@ Enemy.prototype.draw = function(canvas, graphics) {
 Enemy.prototype.update = function() {
   if (this.exploded) {
     var iter = Enemy.EXPLODED_ENEMY_SPRITE.length * 10;
-    if (this.animationCounter < iter) {
-      this.animationCounter++;
+    if (this.animationExplosionCounter < iter) {
+      this.animationExplosionCounter++;
     }
     else {
       this.active = false;
@@ -117,8 +135,8 @@ Enemy.prototype.update = function() {
     this.x += this.xVelocity;
     this.y += this.yVelocity;
   
-    this.tileSprite.position.x = this.x;
-    this.tileSprite.position.y = this.y;
+    this.enemyMovementClip.position.x = this.x;
+    this.enemyMovementClip.position.y = this.y;
     
     this.xVelocity = 3 * Math.sin(this.age * Math.PI / 64);
   
@@ -134,4 +152,7 @@ Enemy.prototype.update = function() {
 Enemy.prototype.explode = function() {
   this.exploded = true;
   this.timeDestruction = (new Date()).getTime();
+  if (this.explodingSound != null) {
+    this.explodingSound.play();
+  }
 }

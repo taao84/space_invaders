@@ -42,3 +42,12 @@ function animate() {
     renderer.render(stage);
   //}
 } 
+
+function checkCompatibility() {
+  //Check if browser supports html5 sound
+  if (buzz.isSupported()) {
+    return true;
+  }
+  alert("Your browser is too old, it doesn't support html sound. Time to update!!!");
+  return false;
+}

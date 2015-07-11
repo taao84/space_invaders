@@ -15,8 +15,14 @@ function SpaceInvadersController (canvasWidth, canvasHeight) {
   
   this.gameContainer.addChild(this.graphics);
   
+  // Game Sounds
+  this.sounds = SpaceInvadersController.loadSounds();
+  
   // Create the game elements
   var player = new Player(this.gameContainer);
+  player.shootingSound = this.sounds["galaga_shoot.mp3"];
+  player.explodingSound = this.sounds["explosion.mp3"];
+
   this.enemies = [];
   this.gameOver = false;
   
@@ -91,6 +97,7 @@ SpaceInvadersController.prototype.update = function() {
   if ((this.enemies) && (this.enemies.length < 10)) { 
     if(Math.random() < 0.1) {
       var enemy = new Enemy(this.gameContainer, this.canvasWidth, this.canvasHeight);
+      enemy.explodingSound = this.sounds["kill_enemy.mp3"]
       this.enemies.push(enemy);
     }
   }
@@ -153,4 +160,28 @@ SpaceInvadersController.rectangularCollision = function(o1, o2) {
       && o1.getX() + o1.getWidth() > o2.getX()
       && o1.getY() < o2.getY() + o2.getHeight()
       && o1.getY() + o1.getHeight() > o2.getY();
+}
+
+/**
+ * Load the game sounds.
+ */
+SpaceInvadersController.loadSounds = function() {
+  if (!buzz.isMP3Supported()) {
+    alert("Your browser doesn't support MP3 Format.");
+    return;
+  }
+  
+  var sounds = {};
+  sounds["Intro.mp3"] = new buzz.sound("assets/sounds/Intro.mp3");
+  sounds["galaga_shoot.mp3"] = new buzz.sound("assets/sounds/galaga_shoot.mp3");
+  sounds["spaceship-atmosphere.mp3"] = new buzz.sound("assets/sounds/spaceship-atmosphere.mp3");
+  sounds["explosion.mp3"] = new buzz.sound("assets/sounds/explosion.mp3");
+  sounds["kill_enemy.mp3"] = new buzz.sound("assets/sounds/kill_enemy.mp3");
+  
+  sounds["Intro.mp3"].load();
+  sounds["galaga_shoot.mp3"].load();
+  sounds["spaceship-atmosphere.mp3"].load();
+  sounds["explosion.mp3"].load;
+  sounds["kill_enemy.mp3"].load();
+  return sounds;
 }

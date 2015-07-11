@@ -14,6 +14,10 @@ function Player (container) {
   this.gameContainer = container;
   this.gameContainer.addChild(this.tileSprite);
   
+  // Sounds
+  this.shootingSound = null;
+  this.explodingSound = null;
+  
   //Explosion animation
   this.explosionClip = null;
   var explosionTextures = [];
@@ -137,6 +141,10 @@ Player.prototype.shoot = function() {
 
   var bullet = new Bullet(5, bulletPosition.x, bulletPosition.y);
   this.playerBullets.push(bullet);
+  
+  if (this.shootingSound != null) {
+    this.shootingSound.play();
+  }
 };
 
 Player.prototype.midpoint = function() {
@@ -151,4 +159,8 @@ Player.prototype.midpoint = function() {
  */
 Player.prototype.explode = function() {
   this.exploded = true;
+  
+  if (this.explodingSound != null) {
+    this.explodingSound.play();
+  }
 }

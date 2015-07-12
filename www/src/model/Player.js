@@ -153,13 +153,15 @@ Player.prototype.update = function () {
 }
 
 Player.prototype.shoot = function() {
-  var bulletPosition = this.midpoint();
-
-  var bullet = new Bullet(5, bulletPosition.x, bulletPosition.y);
-  this.playerBullets.push(bullet);
+  if (this.active) {
+    var bulletPosition = this.midpoint();
   
-  if (this.shootingSound != null) {
-    this.shootingSound.play();
+    var bullet = new Bullet(5, bulletPosition.x, bulletPosition.y);
+    this.playerBullets.push(bullet);
+    
+    if (this.shootingSound != null) {
+      this.shootingSound.play();
+    }
   }
 };
 

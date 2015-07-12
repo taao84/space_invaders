@@ -22,6 +22,9 @@ function SpaceInvadersController (canvasWidth, canvasHeight) {
   var player = new Player(this.gameContainer);
   player.shootingSound = this.sounds["galaga_shoot.mp3"];
   player.explodingSound = this.sounds["explosion.mp3"];
+  
+  // Create the score
+  this.score = new Score(this.gameContainer, this.canvasWidth, this.canvasHeight);
 
   this.enemies = [];
   this.gameOver = false;
@@ -74,11 +77,16 @@ SpaceInvadersController.prototype.draw = function() {
   var graphics = this.graphics;
   var canvas = this.gameContainer;
   graphics.clear();
-  this.getPlayer().draw(canvas, graphics);
+  
+  if (!this.gameOver) {
+    this.score.draw(canvas, graphics);
+    this.getPlayer().draw(canvas, graphics);
+  }
   
   this.enemies.forEach(function(enemy) {
     enemy.draw(canvas, graphics);
   });
+  
 }
 
 /**
@@ -86,8 +94,6 @@ SpaceInvadersController.prototype.draw = function() {
  */
 SpaceInvadersController.prototype.update = function() {
   this.getBackground().update();
-  
-  this.getPlayer().update();
   
   this.enemies = this.enemies.filter(function(enemy) {
     return enemy.active;
@@ -110,7 +116,9 @@ SpaceInvadersController.prototype.update = function() {
   }
   
   if (!this.gameOver) {
+    this.getPlayer().update();
     this.handleCollisions();
+    this.score.update();
   }
 }
 
@@ -120,11 +128,13 @@ SpaceInvadersController.prototype.update = function() {
 SpaceInvadersController.prototype.handleCollisions = function() {
   var player = this.getPlayer();
   var enemies = this.enemies;
+  var score = this.score;
   player.playerBullets.forEach(function(bullet) {
     enemies.forEach(function(enemy) {
       if (SpaceInvadersController.rectangularCollision(bullet, enemy)) {
         enemy.explode();
         bullet.active = false;
+        score.enemyKilled();
       }
     });
   });
@@ -133,6 +143,7 @@ SpaceInvadersController.prototype.handleCollisions = function() {
     if (SpaceInvadersController.rectangularCollision(enemy, player)) {
       enemy.explode();
       player.explode();
+      score.gameOver();
     }
   });
 }

@@ -12,6 +12,8 @@ Enemy.EXPLODED_ENEMY_SPRITE = [
 ];
 
 /**
+ * Constructor.
+ * @param container the container were this enemy will be rendered.
  * @param canvasWidth The width of the canvas were this enemy is going to be placed.
  * @param canvasHeigth The height of the canvas were this enemy is going to be placed.
  */
@@ -52,9 +54,9 @@ function Enemy(container, canvasWidth, canvasHeight) {
   this.color = "#A2B";
 
   this.x = Math.floor(Math.random() * canvasWidth);
-  this.y = 0;
+  this.y = 50;
   this.xVelocity = 0
-  this.yVelocity = 0.5;
+  this.yVelocity = 0.4;
 
   this.width = 19;
   this.height = 20;

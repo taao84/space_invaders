@@ -52,17 +52,17 @@ Background.prototype.update = function() {
   }
   
   if (this.movingForwardX) {
-    this.xVelocity = 3 * Math.sin(3 * Math.PI / 64);
+    this.xVelocity = 1 * Math.sin(3 * Math.PI / 64);
   }
   else {
-    this.xVelocity = -3 * Math.sin(3 * Math.PI / 64);
+    this.xVelocity = -1 * Math.sin(3 * Math.PI / 64);
   }
   
   if (this.movingForwardY) {
-    this.yVelocity = 3 * Math.sin(3 * Math.PI / 64);
+    this.yVelocity = 1 * Math.sin(3 * Math.PI / 64);
   }
   else {
-    this.yVelocity = -3 * Math.sin(3 * Math.PI / 64);
+    this.yVelocity = -1 * Math.sin(3 * Math.PI / 64);
   }
 };
 

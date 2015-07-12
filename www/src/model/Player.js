@@ -32,7 +32,8 @@ function Player (container) {
   this.exploded = false;
   this.color = "#FFF";
   this.x = 220;
-  this.y = 270;
+  this.y = 250;
+  this.speedX = 0;
   this.width = 17;
   this.height = 18;
   
@@ -61,15 +62,19 @@ function Player (container) {
 
 Player.prototype.moveRight = function(steps) {
   if (this.active) {
-    this.x += steps;
-    this.tileSprite.position.x = this.x;
+    this.speedX = 2;
   }
 }
 
 Player.prototype.moveLeft = function(steps) {
   if (this.active) {
-    this.x -= steps;
-    this.tileSprite.position.x = this.x;
+    this.speedX = -2;
+  }
+}
+
+Player.prototype.stop = function(steps) {
+  if (this.active) {
+    this.speedX = 0;
   }
 }
 
@@ -96,7 +101,11 @@ Player.prototype.draw = function(canvas, graphics) {
   
   if (this.active) {
     // Draw a rectangle if there is no sprite loaded
-    if (!this.tileSprite) {
+    if (this.tileSprite) {
+      this.tileSprite.position.x = this.x;
+      this.tileSprite.position.y = this.y;
+    }
+    else {
       graphics.beginFill(this.color);
       graphics.lineStyle(1, this.color);
       //draw a rectangle
@@ -117,21 +126,28 @@ Player.prototype.draw = function(canvas, graphics) {
  * 
  */
 Player.prototype.update = function () {
-  this.playerBullets.forEach(function(bullet) {
-    bullet.update();
-  });
-  
-  this.playerBullets = this.playerBullets.filter(function(bullet) {
-    return bullet.active;
-  });
-  
-  if (this.exploded) { 
-    var iter = Player.EXPLODED_ANIMATION.length * 10;
-    if (this.animationExplotionCounter < iter) {
-      this.animationExplotionCounter++;
-    }
-    else {
-      this.active = false;
+  if (this.active) {
+    if (((this.x > 0) && (this.x < 630)) || ((this.x == 0) && (this.speedX > 0))
+        || ((this.x == 630) && (this.speedX < 0))) {
+      this.x += this.speedX;
+    } 
+    
+    this.playerBullets.forEach(function(bullet) {
+      bullet.update();
+    });
+    
+    this.playerBullets = this.playerBullets.filter(function(bullet) {
+      return bullet.active;
+    });
+    
+    if (this.exploded) { 
+      var iter = Player.EXPLODED_ANIMATION.length * 10;
+      if (this.animationExplotionCounter < iter) {
+        this.animationExplotionCounter++;
+      }
+      else {
+        this.active = false;
+      }
     }
   }
 }

@@ -35,17 +35,20 @@ function SpaceInvadersController (canvasWidth, canvasHeight) {
   
   //Left arrow key `press` method
   left.press = function() {
-    player.moveLeft(5);
+    player.moveLeft();
   };
 
   //Left arrow key `release` method
-  left.release = function() {};
+  left.release = function() {
+    player.stop();
+  };
   
   //Right
   right.press = function() {
-    player.moveRight(5);
+    player.moveRight();
   };
   right.release = function() {
+    player.stop();
   };
   
   // Space bar 

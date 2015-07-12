@@ -24,7 +24,7 @@ function SpaceInvadersController (canvasWidth, canvasHeight) {
   player.explodingSound = this.sounds["explosion.mp3"];
   
   // Create the score
-  this.score = new Score(this.gameContainer, this.canvasWidth, this.canvasHeight);
+  var score = new Score(this.gameContainer, this.canvasWidth, this.canvasHeight);
 
   this.enemies = [];
   this.gameOver = false;
@@ -57,6 +57,7 @@ function SpaceInvadersController (canvasWidth, canvasHeight) {
   // Space bar 
   space_bar.press = function() {
     player.shoot();
+    score.incrementGunShots();
   };
   
   this.getPlayer = function () {
@@ -65,6 +66,10 @@ function SpaceInvadersController (canvasWidth, canvasHeight) {
   
   this.getBackground = function () {
     return background;
+  };
+  
+  this.getScore = function () {
+    return score;
   };
 } 
 
@@ -79,7 +84,7 @@ SpaceInvadersController.prototype.draw = function() {
   graphics.clear();
   
   if (!this.gameOver) {
-    this.score.draw(canvas, graphics);
+    this.getScore().draw(canvas, graphics);
     this.getPlayer().draw(canvas, graphics);
   }
   
@@ -118,7 +123,7 @@ SpaceInvadersController.prototype.update = function() {
   if (!this.gameOver) {
     this.getPlayer().update();
     this.handleCollisions();
-    this.score.update();
+    this.getScore().update();
   }
 }
 
@@ -128,7 +133,7 @@ SpaceInvadersController.prototype.update = function() {
 SpaceInvadersController.prototype.handleCollisions = function() {
   var player = this.getPlayer();
   var enemies = this.enemies;
-  var score = this.score;
+  var score = this.getScore();
   player.playerBullets.forEach(function(bullet) {
     enemies.forEach(function(enemy) {
       if (SpaceInvadersController.rectangularCollision(bullet, enemy)) {
@@ -187,7 +192,7 @@ SpaceInvadersController.loadSounds = function() {
   
   var sounds = {};
   sounds["Intro.mp3"] = new buzz.sound("assets/sounds/Intro.mp3");
-  sounds["galaga_shoot.mp3"] = new buzz.sound("assets/sounds/galaga_shoot.mp3");
+  sounds["galaga_shoot.mp3"] = new buzz.sound("assets/sounds/galaga_shoot2.mp3");
   sounds["spaceship-atmosphere.mp3"] = new buzz.sound("assets/sounds/spaceship-atmosphere.mp3");
   sounds["explosion.mp3"] = new buzz.sound("assets/sounds/explosion.mp3");
   sounds["kill_enemy.mp3"] = new buzz.sound("assets/sounds/kill_enemy.mp3");

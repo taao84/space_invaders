@@ -2,8 +2,9 @@
  * The main controller for the Space invaders game.
  * @param canvasWidth The width of the canvas.
  * @param canvasHeight The height of the canvas.
+ * @param sounds All the sounds available for this game.
  */
-function SpaceInvadersController (canvasWidth, canvasHeight) {
+function SpaceInvadersController (canvasWidth, canvasHeight, sounds) {
 
   //create an empty container
   this.gameContainer = new PIXI.Container();
@@ -16,7 +17,7 @@ function SpaceInvadersController (canvasWidth, canvasHeight) {
   this.gameContainer.addChild(this.graphics);
   
   // Game Sounds
-  this.sounds = SpaceInvadersController.loadSounds();
+  this.sounds = sounds;
   
   // Create the game elements
   var player = new Player(this.gameContainer);
@@ -156,14 +157,35 @@ SpaceInvadersController.prototype.handleCollisions = function() {
 /**
  * The given object has to implement the getX(), getY(), getWidth() and getHeight() methods, 
  * otherwise this method will fail.
+ * 
+ * If no width or height are provided this method will use the ones in GameSettings.js.
+ * 
  * @param element The element to check if it is in the bounds of the canvas handled by this 
  * controller or not.
+ * @param width the width of the bounds to check.
+ * @param height the height of the bounds to check.
  * @return {boolean} true if the object in the bounds of the canvas in this controller, 
  * false otherwise. 
  */
-SpaceInvadersController.isElementsInBounds = function(element) {
-  return element.getX() >= 0 && element.getX() <= canvasWidth
-      && element.getY() >= 0 && element.getY() <= canvasHeight;
+SpaceInvadersController.isElementsInBounds = function(element, width, height) {
+  var widthToCompare = null;
+  var heightToCompare = null;
+  if (width) {
+    widthToCompare = width;
+  }
+  else {
+    widthToCompare = GameSettings.canvasWidth;
+  }
+  
+  if (height) {
+    heightToCompare = height;
+  }
+  else {
+    heightToCompare = GameSettings.canvasHeight;
+  }
+  
+  return element.getX() >= 0 && element.getX() <= widthToCompare 
+      && element.getY() >= 0 && element.getY() <= heightToCompare;
 }
 
 /**
@@ -179,28 +201,38 @@ SpaceInvadersController.rectangularCollision = function(o1, o2) {
       && o1.getX() + o1.getWidth() > o2.getX()
       && o1.getY() < o2.getY() + o2.getHeight()
       && o1.getY() + o1.getHeight() > o2.getY();
+} 
+
+/**
+ * Restarts the execution of this game.
+ */
+SpaceInvadersController.prototype.restartGame = function() {
+  // Pause the game
+  this.pauseGame();
+  
+  // Destroy all the variables
+  this.gameContainer = null;
+  this.graphics = null;
+  this.canvasWidth = null;
+  this.canvasHeight = null;
+  var background = null;
+  this.sounds = null;
+  var player = null;
+  var score = null;
+  this.enemies = null;
+  this.gameOver = null;
 }
 
 /**
- * Load the game sounds.
+ * Pauses the execution of this game.
  */
-SpaceInvadersController.loadSounds = function() {
-  if (!buzz.isMP3Supported()) {
-    alert("Your browser doesn't support MP3 Format.");
-    return;
-  }
-  
-  var sounds = {};
-  sounds["Intro.mp3"] = new buzz.sound("assets/sounds/Intro.mp3");
-  sounds["galaga_shoot.mp3"] = new buzz.sound("assets/sounds/galaga_shoot2.mp3");
-  sounds["spaceship-atmosphere.mp3"] = new buzz.sound("assets/sounds/spaceship-atmosphere.mp3");
-  sounds["explosion.mp3"] = new buzz.sound("assets/sounds/explosion.mp3");
-  sounds["kill_enemy.mp3"] = new buzz.sound("assets/sounds/kill_enemy.mp3");
-  
-  sounds["Intro.mp3"].load();
-  sounds["galaga_shoot.mp3"].load();
-  sounds["spaceship-atmosphere.mp3"].load();
-  sounds["explosion.mp3"].load;
-  sounds["kill_enemy.mp3"].load();
-  return sounds;
+SpaceInvadersController.prototype.pauseGame = function () {
+  this.paused = true;
+}
+
+/**
+ * Mute the sounds in this game.
+ */
+SpaceInvadersController.prototype.muteGame = function() {
+  alert("Muting the sounds");
 }
